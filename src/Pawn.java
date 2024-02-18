@@ -3,47 +3,51 @@ public class Pawn extends ChessPiece {
         super(color);
     }
 
+    @Override
     public String getColor() {
         return this.color;
     }
 
+    @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-        byte pawn;
-        byte startPos;
-        if (this.getColor().equals("White")) {
-            pawn = 1;
-            startPos = 1;
-        } else {
-            if (!this.getColor().equals("Black")) {
-                return false;
-            }
+        if (checkPos(line) && checkPos(column) && checkPos(toLine) && checkPos(toColumn) && chessBoard.board[line][column] != null) {
+            if (column == toColumn) {
+                int dir;
+                int start;
 
-            pawn = -1;
-            startPos = 6;
-        }
-
-        if (toLine < 8 && toLine >= 0 && toColumn < 8 && toColumn >= 0) {
-            if (line == toLine && column == toColumn) {
-                return false;
-            } else if (column == toColumn) {
-                if (line + 2 * pawn == toLine && line == startPos) {
-                    if (chessBoard.board[toLine][toColumn] != null) {
-                        return !chessBoard.board[toLine][toColumn].getColor().equals(this.color);
-                    } else {
-                        return true;
-                    }
+                if (color.equals("White")) {
+                    dir = 1;
+                    start = 1;
                 } else {
-                    return line + pawn == toLine;
+                    dir = -1;
+                    start = 6;
                 }
+
+                if (line + dir == toLine) {
+                    return chessBoard.board[toLine][toColumn] == null;
+                }
+
+                if (line == start && line + 2 * dir == toLine) {
+                    return chessBoard.board[toLine][toColumn] == null && chessBoard.board[line + dir][column] == null;
+                }
+
             } else {
-                return false;
+
+                if ((column - toColumn == 1 || column - toColumn == -1) && (line - toLine == 1 || line - toLine == -1) &&
+                        chessBoard.board[toLine][toColumn] != null) {
+                    return !chessBoard.board[toLine][toColumn].getColor().equals(color);
+                } else return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
+    @Override
     public String getSymbol() {
         return "P";
+    }
+
+    public boolean checkPos(int pos) {
+        return pos >= 0 && pos <= 7;
     }
 }

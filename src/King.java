@@ -1,45 +1,50 @@
 public class King extends ChessPiece {
-    boolean isUnderAttack = false;
 
     public King(String color) {
         super(color);
     }
 
+    @Override
     public String getColor() {
-        return this.color;
+        return color;
     }
 
+    @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-        if (toLine < 8 && toLine >= 0 && toColumn < 8 && toColumn >= 0) {
-            if (Math.abs(line - toLine) <= 1 && Math.abs(column - toColumn) <= 1) {
-                if (this.isUnderAttack(chessBoard, toLine, toColumn)) {
-                    return false;
-                } else if (chessBoard.board[toLine][toColumn] != null) {
-                    return !chessBoard.board[toLine][toColumn].getColor().equals(this.color);
-                } else {
-                    return true;
-                }
-            } else {
-                return false;
+        if (checkPos(line) && checkPos(column) && checkPos(toLine) && checkPos(toColumn)) {
+            if (Math.abs(line - toLine) > 1 || Math.abs(column - toColumn) > 1) return false;
+
+            if (isUnderAttack(chessBoard, toLine, toColumn)) return false;
+
+            if (chessBoard.board[toLine][toColumn] != null) {
+                return !chessBoard.board[toLine][toColumn].getColor().equals(color);
             }
-        } else {
-            return false;
-        }
+
+            return true;
+        } else return false;
+    }
+
+    @Override
+    public String getSymbol() {
+        return "K";
     }
 
     public boolean isUnderAttack(ChessBoard chessBoard, int line, int column) {
-        for(int x = 0; x < 7; ++x) {
-            for(int y = 0; y < 7; ++y) {
-                if (chessBoard.board[x][y] != null && !chessBoard.board[x][y].getColor().equals(this.color) && chessBoard.board[x][y].canMoveToPosition(chessBoard, x, y, line, column)) {
-                    return false;
+        if (checkPos(line) && checkPos(column)) {
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (chessBoard.board[i][j] != null) {
+                        if (!chessBoard.board[i][j].getColor().equals(color) && chessBoard.board[i][j].canMoveToPosition(chessBoard, i, j, line, column)) {
+                            return true;
+                        }
+                    }
                 }
             }
-        }
-
-        return this.isUnderAttack;
+            return false;
+        } else return false;
     }
 
-    public String getSymbol() {
-        return "K";
+    public boolean checkPos(int pos) {
+        return pos >= 0 && pos <= 7;
     }
 }
